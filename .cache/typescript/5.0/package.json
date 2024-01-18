@@ -1,0 +1,1 @@
+{"private":true,"dependencies":{"types-registry":"^0.1.671"},"devDependencies":{"@types/d":"^1.0.4","@types/express":"^4.17.21","@types/node-schedule":"^2.1.4","@types/xmlhttprequest":"^1.8.2"}}
