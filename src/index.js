@@ -36,8 +36,8 @@ const getData = () => {
 };
 
 const getChannels = async (el) => {
-  const getChannels = require("./functions/getChannels");
-  const notifyUser = require("./functions/notifyUser");
+  const getChannels = require("../functions/getChannels");
+  const notifyUser = require("../functions/notifyUser");
 
   const token = el.token;
 
@@ -90,7 +90,7 @@ const getChannels = async (el) => {
 };
 
 const tokenFunction = async () => {
-  const getToken = require("./functions/getToken");
+  const getToken = require("../functions/getToken");
 
   const token_func = await getToken();
 
@@ -114,7 +114,7 @@ setInterval(() => {
 const schedule = require("node-schedule");
 
 schedule.scheduleJob("5 9 * * *", function () {
-  const notifyUser = require("./functions/notifyUser");
+  const notifyUser = require("../functions/notifyUser");
   console.log("Resetting Channels!");
   notifiedChannels = [""];
 
