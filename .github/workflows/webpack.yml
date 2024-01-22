@@ -26,5 +26,3 @@ jobs:
       run: |
         npm install
         npx webpack
-        node ./index.js
-
