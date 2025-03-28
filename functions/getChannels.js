@@ -3,7 +3,7 @@ const getChannels = async (el) => {
   const options = {
     method: "GET",
     headers: {
-      "Client-ID": "g23nf3u0ej1o7jkzi04q93n735jawx",
+      "Client-ID": "[TOKEN]",
       "Authorization": 'Bearer ' + el.token,
     }
   }
@@ -32,7 +32,7 @@ const getChannels = async (el) => {
   const channels_request_options = {
     method: "GET",
     headers: {
-      "Client-ID": "g23nf3u0ej1o7jkzi04q93n735jawx",
+      "Client-ID": "[TOKEN]",
       "Authorization": 'Bearer ' + el.token,
     }
   }
