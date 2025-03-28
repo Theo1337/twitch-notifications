@@ -37,7 +37,7 @@ const notifyUser = (c) => {
     ],
   }
 
-  request.open("POST", "https://discord.com/api/webhooks/1154861224421502986/6PF_326hUdaqpIm2OYgP2CTYgKrMdlzyr0p6S7tuMB7zhBOlgrBOu19BKxmNMVAMHOva")
+  request.open("POST", "[DISCORD_WEBHOOK_URL]")
   request.setRequestHeader('Content-type', 'application/json');
 
   request.send(JSON.stringify(content));
