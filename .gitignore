@@ -12,3 +12,6 @@
 
 # Ignore Unity Package Manager directory
 /.upm
+
+# Ignore node_modules directory
+/node_modules

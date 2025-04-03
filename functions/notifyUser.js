@@ -52,8 +52,13 @@ const notifyUser = (c) => {
           ],
         };
 
+<<<<<<< HEAD
   request.open("POST", process.env.DISCORD_WEBHOOK_URL, true);
   request.setRequestHeader("Content-type", "application/json");
+=======
+  request.open("POST", "[DISCORD_WEBHOOK_URL]")
+  request.setRequestHeader('Content-type', 'application/json');
+>>>>>>> 2147360174b6b301681588b8e11d8506fe301f4e
 
   request.send(JSON.stringify(content));
 };
