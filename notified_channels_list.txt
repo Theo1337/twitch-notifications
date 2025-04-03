@@ -1,1 +1,12 @@
-[{"name":"felps","games":[]}]
+[
+  {
+    "name": "felps",
+    "games": [
+      "Minecraft"
+    ]
+  },
+  {
+    "name": "omeiaum",
+    "games": []
+  }
+]

@@ -1,6 +1,6 @@
 const getToken = async () => {
-  const TWITCH_CLIENT_ID = 'g23nf3u0ej1o7jkzi04q93n735jawx';
-  const TWITCH_SECRET = 'ir8jymwkw9xlf0u9moj0hochqry2z0';
+  const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
+  const TWITCH_SECRET = process.env.TWITCH_SECRET;
   const TOKEN_URL = `https://id.twitch.tv/oauth2/token?client_id=${TWITCH_CLIENT_ID}&client_secret=${TWITCH_SECRET}&grant_type=client_credentials`;
 
   const options = {
@@ -8,10 +8,10 @@ const getToken = async () => {
     json: true,
   };
 
-  const token = await fetch(TOKEN_URL, options)
-  const res = await token.json()
+  const token = await fetch(TOKEN_URL, options);
+  const res = await token.json();
 
-  return res
-}
+  return res;
+};
 
-module.exports = getToken
+module.exports = getToken;

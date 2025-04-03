@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap");
+
+body {
+  font-family: Poppins;
+  background-color: #292626;
+  color: white;
+}
+
+dialog,
+input {
+  outline: none;
+  border: none;
+}
+dialog::backdrop {
+  background-color: black;
+  opacity: 0.35;
+}
+
+.channelBox:hover .channelBoxImage {
+  display: flex;
+}

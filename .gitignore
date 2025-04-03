@@ -1,0 +1,14 @@
+# Ignore environment variables
+.env
+
+# Ignore daemon directory
+/daemon
+
+# Ignore cache directory
+/.cache
+
+# Ignore GitHub configuration directory
+/.github
+
+# Ignore Unity Package Manager directory
+/.upm
