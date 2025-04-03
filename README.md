@@ -10,4 +10,4 @@ A Twitch app to send notifications in a Discord server
   - Base HTML (placeholder)
 
 ## To-Do
-  - Get secrets from .env file 
+  - ~Get secrets from .env file~ - Done
