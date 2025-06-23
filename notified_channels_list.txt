@@ -1,12 +1,6 @@
 [
   {
-    "name": "felps",
-    "games": [
-      "Minecraft"
-    ]
-  },
-  {
-    "name": "omeiaum",
+    "name": "coreano",
     "games": []
   }
 ]

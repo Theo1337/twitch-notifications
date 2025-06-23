@@ -60,6 +60,7 @@ const getChannels = async (el) => {
       });
     });
   }
+
   return streams;
 };
 

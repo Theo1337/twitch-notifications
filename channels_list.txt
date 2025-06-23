@@ -14,8 +14,8 @@
     "name": "cellbit",
     "games": [
       "Minecraft",
-      "Among Us",
-      "Blue Prince"
+      "Marvel's Spider-Man 2",
+      "Among Us"
     ]
   },
   {
@@ -26,7 +26,8 @@
     "name": "felps",
     "games": [
       "Minecraft",
-      "Phantom Abyss"
+      "Phantom Abyss",
+      "The Long Drive"
     ]
   },
   {
@@ -35,14 +36,12 @@
   },
   {
     "name": "bethuueel",
-    "games": []
+    "games": [
+      "Minecraft"
+    ]
   },
   {
-    "name": "theprimeagen",
-    "games": []
-  },
-  {
-    "name": "coreano",
+    "name": "asd",
     "games": []
   }
 ]

@@ -53,15 +53,61 @@
       </div>
     </dialog>
 
+    <dialog
+      id="addChannelDialog"
+      class="addChannelDialog bg-stone-600 rounded-lg text-white w-3/12 px-4 py-2"
+    >
+      <div>
+        <div class="py-1 font-bold text-lg">Add Twitch Channel</div>
+        <div class="w-full h-0.5 bg-neutral-500 rounded-full"></div>
+        <div class="py-4">
+          <div class="font-bold text-sm">Channel name:</div>
+          <input
+            class="w-full bg-stone-800 rounded-md text-neutral-200 p-2"
+            placeholder="Enter channel name..."
+            id="addChannelInput"
+            autofocus
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            type="text"
+            required
+          />
+        </div>
+        <div class="flex justify-between py-2">
+          <button
+            id="cancelAddChannel"
+            class="rounded-lg font-lighter text-red-400 transition p-2"
+          >
+            CANCEL
+          </button>
+          <button
+            id="confirmAddChannel"
+            class="rounded-lg bg-sky-600 font-medium hover:bg-sky-500 transition p-2"
+          >
+            ADD
+          </button>
+        </div>
+        <div id="addChannelMessage" class="text-sm mt-2"></div>
+      </div>
+    </dialog>
+
     <header>
       <div
         class="bg-neutral-700 p-3 font-bold flex justify-center items-center"
       >
         <div class="flex items-center justify-between w-full max-w-screen-md">
-          <div>ICON PH</div>
+          <div class="flex items-center gap-2">
+            <img src="https://icons.duckduckgo.com/ip3/twitch.tv.ico" alt="" />
+            <div class="text-md">Twitch Notifications</div>
+          </div>
 
           <div>
-            <button id="addButton" class="bg-sky-500 p-2 rounded-full px-6">
+            <button
+              id="addButton"
+              class="bg-sky-500 p-1 rounded-full text-sm px-6"
+            >
               ADD
             </button>
           </div>
@@ -82,5 +128,49 @@
     <!-- <script type="module" src="/functions/getChannels.js">
     <script type="module" src="/functions/searchChannels.js"></script>
     -->
+
+    <script>
+      // Open dialog
+      document.getElementById("addButton").onclick = () => {
+        document.getElementById("addChannelDialog").showModal();
+        document.getElementById("addChannelInput").value = "";
+        document.getElementById("addChannelMessage").textContent = "";
+      };
+
+      // Cancel dialog
+      document.getElementById("cancelAddChannel").onclick = () => {
+        document.getElementById("addChannelDialog").close();
+      };
+
+      // Confirm add channel
+      document.getElementById("confirmAddChannel").onclick = async () => {
+        const channel = document.getElementById("addChannelInput").value.trim();
+        const msg = document.getElementById("addChannelMessage");
+        if (!channel) {
+          msg.textContent = "Please enter a channel name.";
+          return;
+        }
+        msg.textContent = "Adding...";
+        try {
+          const res = await fetch("/api/add-channel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ channel }),
+          });
+          if (res.ok) {
+            msg.textContent = "Channel added!";
+            setTimeout(() => {
+              document.getElementById("addChannelDialog").close();
+              location.reload();
+              // Optionally refresh your channel list here
+            }, 800);
+          } else {
+            msg.textContent = "Failed to add channel.";
+          }
+        } catch (e) {
+          msg.textContent = "Error connecting to server.";
+        }
+      };
+    </script>
   </body>
 </html>

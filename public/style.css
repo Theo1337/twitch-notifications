@@ -16,6 +16,23 @@ dialog::backdrop {
   opacity: 0.35;
 }
 
-.channelBox:hover .channelBoxImage {
-  display: flex;
+/* Custom scrollbar with transparent background and gray handle */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Darker gray handle on hover */
+}
+
+::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  background: #888; /* Gray handle */
+  border-radius: 100vh;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }

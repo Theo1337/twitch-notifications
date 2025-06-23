@@ -1,8 +1,10 @@
-const notifyUser = require("./functions/notifyUser");
 const express = require("express");
 const app = express();
+const webpush = require("web-push");
 
 require("dotenv").config();
+
+app.use(express.json());
 
 app.get("/", (request, response) => {
   const ping = new Date();
@@ -14,7 +16,7 @@ app.get("/", (request, response) => {
 });
 
 app.use(express.static(__dirname + "/public"));
-app.listen(3002); // Recebe solicitações que o deixa online
+app.listen(process.env.PORT || 3002); // Recebe solicitações que o deixa online
 
 var cors = require("cors");
 app.use(cors());
@@ -28,13 +30,17 @@ let notifiedChannels;
 let ytNotifiedChannels;
 let channels;
 let ytChannels;
+let subscriptions = []; // In production, store in a DB
 
 const fs = require("fs");
 
 const saveData = () => {
   try {
     const value = JSON.stringify(channels, null, 2); // Format JSON for readability
-    fs.writeFileSync("channels_list.txt", value, "utf-8");
+    fs.writeFileSync("./public/channels_list.txt", value, "utf-8");
+
+    const value2 = JSON.stringify(subscriptions, null, 2); // Format JSON for readability
+    fs.writeFileSync("./public/subscriptions.txt", value2, "utf-8");
   } catch (error) {
     console.error("Error saving channels data:", error.message);
   }
@@ -56,6 +62,12 @@ const getData = () => {
       "utf-8"
     );
     channels = JSON.parse(channels_value) || [];
+
+    const subscriptions_value = fs.readFileSync(
+      "./public/subscriptions.txt",
+      "utf-8"
+    );
+    subscriptions = JSON.parse(subscriptions_value) || [];
   } catch (error) {
     console.error("Error reading channels data:", error.message);
     channels = []; // Reset to an empty array if the file is corrupted
@@ -73,13 +85,27 @@ const getData = () => {
   }
 };
 
+function notifyUser(channel) {
+  console.log(channel);
+  const payload = JSON.stringify({
+    title: `${channel.user_name} is playing ${channel.game_name}!`,
+    body: channel.title,
+    icon: channel.profile_image_url,
+    image: channel.thumbnail_url,
+    url: `https://twitch.tv/${channel.user_login}`,
+  });
+  subscriptions.forEach((sub) => {
+    webpush.sendNotification(sub, payload).catch(console.error);
+  });
+}
+
 const getChannels = async (el) => {
-  const getChannels = require("./functions/getChannels");
+  const getTwtChannels = require("./functions/getChannels");
 
   const token = el.token;
 
   if (channels.length > 0) {
-    const res = await getChannels({ channels: channels, token: token });
+    const res = await getTwtChannels({ channels: channels, token: token });
     const notified_live_channels = channels?.filter((e) =>
       res?.some(({ user_name }) => e.name === user_name.toLowerCase())
     );
@@ -188,17 +214,6 @@ setInterval(() => {
   // getYtChannels();
 }, 90000);
 
-const schedule = require("node-schedule");
-
-schedule.scheduleJob("5 9 * * *", function () {
-  const notifyUser = require("./functions/notifyUser");
-  console.log("Resetting Channels!");
-  notifiedChannels = [""];
-
-  saveNotifiedData();
-  notifyUser({ type: "reset" });
-});
-
 app.get("/getFavChannels", async (req, res) => {
   const getChannels = require("./functions/getFavChannels");
 
@@ -207,6 +222,71 @@ app.get("/getFavChannels", async (req, res) => {
   const favChannels = await getChannels({ channels: channels, token: token });
 
   res.send(favChannels.data);
+});
+
+app.post("/api/add-channel", (req, res) => {
+  const { channel } = req.body;
+  if (!channel) return res.status(400).send("No channel provided");
+
+  channels.push({
+    name: channel.toLowerCase(),
+    games: [],
+  });
+  saveData();
+  res.status(200).send("Channel added successfully");
+});
+
+app.post("/api/add-game", (req, res) => {
+  const { channel, game } = req.body;
+  if (!channel || !game) return res.status(400).send("Missing channel or game");
+  const ch = channels.find((c) => c.name === channel.toLowerCase());
+  if (!ch) return res.status(404).send("Channel not found");
+  if (!ch.games) ch.games = [];
+  if (!ch.games.includes(game)) ch.games.push(game);
+  saveData();
+  res.sendStatus(200);
+});
+
+app.post("/api/remove-channel", (req, res) => {
+  const { channel } = req.body;
+  if (!channel) return res.status(400).send("Missing channel");
+  const idx = channels.findIndex((c) => c.name === channel.toLowerCase());
+  if (idx === -1) return res.status(404).send("Channel not found");
+  channels.splice(idx, 1);
+  saveData();
+  res.sendStatus(200);
+});
+
+app.post("/api/remove-game", (req, res) => {
+  const { channel, game } = req.body;
+  if (!channel || !game) return res.status(400).send("Missing channel or game");
+  const ch = channels.find((c) => c.name === channel.toLowerCase());
+  if (!ch) return res.status(404).send("Channel not found");
+  if (!ch.games) ch.games = [];
+  ch.games = ch.games.filter((g) => g !== game);
+  saveData();
+  res.sendStatus(200);
+});
+
+webpush.setVapidDetails(
+  "mailto:your@email.com",
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
+
+app.post("/api/subscribe", (req, res) => {
+  console.log("New subscription received");
+
+  const subscription = req.body;
+  // Check for existing subscription by endpoint
+  const alreadySubscribed = subscriptions.some(
+    (sub) => sub.endpoint === subscription.endpoint
+  );
+  if (!alreadySubscribed) {
+    subscriptions.push(subscription);
+    saveData(); // Save subscriptions to file (or DB in production)
+  }
+  res.status(201).json({});
 });
 
 getData();
