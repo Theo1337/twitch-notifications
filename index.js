@@ -86,7 +86,6 @@ const getData = () => {
 };
 
 function notifyUser(channel) {
-  console.log(channel);
   const payload = JSON.stringify({
     title: `${channel.user_name} is playing ${channel.game_name}!`,
     body: channel.title,
