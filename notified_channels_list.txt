@@ -1,6 +1,6 @@
 [
   {
-    "name": "coreano",
+    "name": "bagi",
     "games": []
   }
 ]

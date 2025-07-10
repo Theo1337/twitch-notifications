@@ -26,7 +26,8 @@
     "name": "felps",
     "games": [
       "Minecraft",
-      "Phantom Abyss"
+      "Phantom Abyss",
+      "The Long Drive"
     ]
   },
   {
@@ -39,10 +40,6 @@
   },
   {
     "name": "theprimeagen",
-    "games": []
-  },
-  {
-    "name": "coreano",
     "games": []
   }
 ]

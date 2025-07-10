@@ -40,14 +40,14 @@ const mainFunc = async () => {
           .map((c, idx) => {
             return `
       <div
-         class="rounded-lg bg-stone-700 p-1 w-3/12 m-4 relative cursor-pointer transition channelBox">
+         class="rounded-lg bg-stone-700 p-1 w-3/12 m-4 relative transition channelBox">
         <div>
           <img
             class="rounded-2xl p-2"
             src=${
               c.offline_image_url
                 ? c.offline_image_url
-                : "https://placehold.co/1920x1080"
+                : "https://static.vecteezy.com/system/resources/thumbnails/053/821/289/small_2x/offline-glitch-banner-glitch-effect-offline-video.jpg"
             }
           />
         </div>
@@ -56,7 +56,7 @@ const mainFunc = async () => {
             <img class="rounded-full w-16" src=${c.profile_image_url} />
           </div>
           <div>
-            <div class="font-bold">${c.display_name}</div>
+            <a href="https://twitch.tv/${c.display_name}" class="hover:underline font-bold">${c.display_name}</a>
             <div class="max-w-[270px] truncate text-neutral-400" title="${
               c.description ? c.description : "No description!"
             }">
@@ -85,7 +85,7 @@ const mainFunc = async () => {
           data-idx="${idx}" data-game-idx="${gameIdx}" title="Remove game">
           ✕
         </button>
-      </div>`
+      </div>`,
               )
               .join("  ")}
           </div>
@@ -99,7 +99,7 @@ const mainFunc = async () => {
           btn.onclick = async (e) => {
             const idx = btn.getAttribute("data-idx");
             const input = document.querySelector(
-              `.add-game-input[data-idx="${idx}"]`
+              `.add-game-input[data-idx="${idx}"]`,
             );
             const game = input.value.trim();
             if (!game) return;
