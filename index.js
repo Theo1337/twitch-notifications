@@ -214,13 +214,16 @@ setInterval(() => {
 }, 90000);
 
 app.get("/getFavChannels", async (req, res) => {
-  const getChannels = require("./functions/getFavChannels");
+  const getChannels = require("./functions/getChannels");
 
   const token = access_token;
 
-  const favChannels = await getChannels({ channels: channels, token: token });
-
-  res.send(favChannels.data);
+  const favChannels = await getChannels({
+    channels: channels,
+    token: token,
+    type: "all",
+  });
+  res.send(favChannels);
 });
 
 app.post("/api/add-channel", (req, res) => {

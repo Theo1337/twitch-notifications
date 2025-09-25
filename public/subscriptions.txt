@@ -14,5 +14,13 @@
       "p256dh": "BB07SBulSPt0u-B2Ghk7DFp4da-Px-9h6Miuy-LqlrPhrmRotfHtCv4vW8-LlaI-pvvFh0fgAbZuIt-bnyWvNxs",
       "auth": "YCbasUgQE2xV74Yfi7WVSw"
     }
+  },
+  {
+    "endpoint": "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABonoGamqWczES8Z6slFZ6ZoMDyB1hpEMpVfoZ3XdtOO62wUpuNMaDGrKfiX756pj8XJrrEyfB-n6ImrOLztoEj7ET9tifEGvkcHCYf2UdnHkIgj69_DFUNHq_QrWLud5wjyQPtIAiqNw4xc1NosZB39o6I84JOy5-r-s1v3P4z9qUgcDI",
+    "expirationTime": null,
+    "keys": {
+      "auth": "-NeKydB5hMz_CYCbkMmU0w",
+      "p256dh": "BBskV9-RZpq2BaVSTednRg_CDiYgcAmh_oiw_RE5PU7TaKuSbMIc_pPRKHPYs64RbTiWdQb0E9VzJP8s7whTuas"
+    }
   }
 ]

@@ -61,7 +61,39 @@ const getChannels = async (el) => {
     });
   }
 
-  return streams;
+  if (el.type === "all") {
+    // Mark offline channels
+    const offlineWithType = offlineChannels.data.map((c) => ({
+      ...c,
+      type: "offline",
+    }));
+
+    // Merge and deduplicate, prefer live
+    const allChannels = [...offlineWithType, ...streams];
+    const uniqueChannels = [];
+    const seenIds = new Set();
+
+    // Prefer live channels if duplicate id
+    allChannels.forEach((channel) => {
+      const id = channel.user_id || channel.id;
+      if (!seenIds.has(id)) {
+        uniqueChannels.push(channel);
+        seenIds.add(id);
+      } else {
+        // If already added and this is live, replace
+        const idx = uniqueChannels.findIndex(
+          (ch) => (ch.user_id || ch.id) === id
+        );
+        if (channel.type === "live" && uniqueChannels[idx].type !== "live") {
+          uniqueChannels[idx] = channel;
+        }
+      }
+    });
+
+    return uniqueChannels;
+  } else {
+    return streams; // All live, already marked
+  }
 };
 
 module.exports = getChannels;
