@@ -56,16 +56,20 @@ const getChannels = async (el) => {
       });
 
       liveChannels.forEach((channel) => {
-        streams.push(channel);
+        streams.push({
+          ...channel,
+          kick: users.find((u) => u.name === channel.user_login)?.kick,
+        });
       });
     });
   }
 
   if (el.type === "all") {
     // Mark offline channels
-    const offlineWithType = offlineChannels.data.map((c) => ({
+    const offlineWithType = offlineChannels.data?.map((c) => ({
       ...c,
       type: "offline",
+      kick: users.find((u) => u.name === c.login)?.kick,
     }));
 
     // Merge and deduplicate, prefer live

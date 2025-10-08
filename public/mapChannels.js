@@ -56,7 +56,9 @@ const mainFunc = async () => {
             <img class="rounded-full w-16" src=${c.profile_image_url} />
           </div>
           <div>
-            <a href="https://twitch.tv/${c.display_name}" class="hover:underline font-bold">${c.display_name}</a>
+            <a href="https://twitch.tv/${
+              c.display_name
+            }" class="hover:underline font-bold">${c.display_name}</a>
             <div class="max-w-[270px] truncate text-neutral-400" title="${
               c.description ? c.description : "No description!"
             }">
@@ -68,8 +70,12 @@ const mainFunc = async () => {
           <input type="text" placeholder="Add game..." class="add-game-input bg-stone-800 w-full text-white rounded px-2 py-1 text-sm" data-idx="${idx}" />
           <button class="add-game-btn bg-green-600 text-white rounded px-2 py-1 text-sm" data-idx="${idx}">Add Game</button>
         </div>
-        <div class="px-2 pb-2 float-right pt-4">
+        <div class="flex gap-2 px-2 pb-2 float-right pt-4">
           <button class="remove-channel-btn bg-red-600 text-white rounded px-2 py-1 text-sm" data-idx="${idx}">Remove channel</button>
+          <button class="add-kick-btn flex bg-[#53FC18] uppercase text-black w-16 gap-1 items-center justify-center font-bold text-white rounded px-2 py-1 text-sm" data-idx="${idx}">
+            <img src="/kick.svg" alt="Kick" class="mr-1 w-4 h-4 " />
+            Kick
+          </button>
         </div>
          <div class="flex items-center max-w-full overflow-x-auto justify-start gap-2 p-2 w-full channelBoxImage ${
            c.games.length <= 0 && "hidden"
@@ -85,7 +91,7 @@ const mainFunc = async () => {
           data-idx="${idx}" data-game-idx="${gameIdx}" title="Remove game">
           ✕
         </button>
-      </div>`,
+      </div>`
               )
               .join("  ")}
           </div>
@@ -99,7 +105,7 @@ const mainFunc = async () => {
           btn.onclick = async (e) => {
             const idx = btn.getAttribute("data-idx");
             const input = document.querySelector(
-              `.add-game-input[data-idx="${idx}"]`,
+              `.add-game-input[data-idx="${idx}"]`
             );
             const game = input.value.trim();
             if (!game) return;

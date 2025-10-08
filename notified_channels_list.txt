@@ -1,10 +1,6 @@
 [
   {
-    "name": "theprimeagen",
-    "games": []
-  },
-  {
-    "name": "sacy",
+    "name": "alanzoka",
     "games": []
   }
 ]

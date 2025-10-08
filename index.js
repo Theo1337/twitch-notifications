@@ -215,6 +215,7 @@ setInterval(() => {
 
 app.get("/getFavChannels", async (req, res) => {
   const getChannels = require("./functions/getChannels");
+  const getKickChannels = require("./functions/getKickChannels");
 
   const token = access_token;
 
@@ -223,6 +224,15 @@ app.get("/getFavChannels", async (req, res) => {
     token: token,
     type: "all",
   });
+  const kickChannels = await getKickChannels({ channels: channels });
+
+  favChannels.forEach((c) => {
+    const kick = kickChannels.find(
+      (k) => k.slug?.toLowerCase() === c.kick?.toLowerCase()
+    );
+    c.kick_live = kick || {};
+  });
+
   res.send(favChannels);
 });
 
@@ -266,6 +276,16 @@ app.post("/api/remove-game", (req, res) => {
   if (!ch) return res.status(404).send("Channel not found");
   if (!ch.games) ch.games = [];
   ch.games = ch.games.filter((g) => g !== game);
+  saveData();
+  res.sendStatus(200);
+});
+
+app.post("/api/add-kick-channel", (req, res) => {
+  const { twitch, kick } = req.body;
+  if (!twitch || !kick) return res.status(400).send("Missing channel info");
+  const ch = channels.find((c) => c.name === twitch.toLowerCase());
+  if (!ch) return res.status(404).send("Twitch channel not found");
+  ch.kick = kick;
   saveData();
   res.sendStatus(200);
 });

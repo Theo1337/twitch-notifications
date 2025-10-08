@@ -3,154 +3,318 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./style.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-    />
     <title>Twitch Notifications</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+      * {
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        min-height: 100vh;
+      }
+
+      dialog {
+        border: none;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      }
+
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+      }
+
+      .channel-card {
+        transition: all 0.3s ease;
+        background: linear-gradient(145deg, #2d3748 0%, #1a202c 100%);
+      }
+
+      .channel-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+
+      .btn-success:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      }
+
+      .btn-danger:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+      }
+
+      .btn-kick {
+        background: #53fc18;
+        color: #000;
+        font-weight: 700;
+      }
+
+      .btn-kick:hover {
+        background: #45d614;
+        transform: scale(1.05);
+      }
+
+      .game-tag {
+        background: rgba(139, 92, 246, 0.2);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        backdrop-filter: blur(10px);
+      }
+
+      input:focus {
+        outline: none;
+        ring: 2px;
+        ring-color: #667eea;
+      }
+
+      .header-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .empty-state {
+        background: rgba(45, 55, 72, 0.5);
+        border: 2px dashed rgba(139, 92, 246, 0.3);
+      }
+    </style>
   </head>
-  <body>
-    <dialog
-      id="searchDialog"
-      class="searchDialog bg-stone-600 rounded-lg text-white w-3/12 px-4 py-2"
-    >
-      <div>
-        <div class="py-1 font-bold text-lg">Search channel</div>
-        <div class="w-full h-0.5 bg-neutral-500 rounded-full"></div>
-
-        <div id="searchDialogSearch">
-          <div class="py-4">
-            <div>
-              <div class="font-bold text-sm">Channel name:</div>
-              <input
-                class="w-full bg-stone-800 rounded-md text-neutral-200 p-2"
-                placeholder="Search channel..."
-                id="searchInputDialog"
-              />
-            </div>
-          </div>
-          <div class="py-2 float-left">
-            <button
-              id="backButtonDialog"
-              class="rounded-lg font-lighter text-red-400 transition p-2"
-            >
-              BACK
-            </button>
-          </div>
-          <div class="py-2 float-right">
-            <button
-              id="searchButtonDialog"
-              class="rounded-lg bg-sky-600 font-bold hover:bg-sky-500 transition p-2"
-            >
-              SEARCH
-            </button>
-          </div>
-        </div>
-
-        <div id="resultDialogSearch"></div>
-      </div>
-    </dialog>
-
+  <body class="antialiased">
+    <!-- Add Channel Dialog -->
     <dialog
       id="addChannelDialog"
-      class="addChannelDialog bg-stone-600 rounded-lg text-white w-3/12 px-4 py-2"
+      class="rounded-2xl bg-gray-800 text-white w-11/12 max-w-md p-0 overflow-hidden"
     >
-      <div>
-        <div class="py-1 font-bold text-lg">Add Twitch Channel</div>
-        <div class="w-full h-0.5 bg-neutral-500 rounded-full"></div>
-        <div class="py-4">
-          <div class="font-bold text-sm">Channel name:</div>
+      <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4">
+        <h2 class="text-2xl font-bold">Add Twitch Channel</h2>
+      </div>
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-semibold mb-2 text-gray-300"
+            >Channel Name</label
+          >
           <input
-            class="w-full bg-stone-800 rounded-md text-neutral-200 p-2"
+            class="w-full bg-gray-700 rounded-lg text-white px-4 py-3 focus:ring-2 focus:ring-purple-500 transition"
             placeholder="Enter channel name..."
             id="addChannelInput"
             autofocus
             autocomplete="off"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
             type="text"
-            required
           />
         </div>
-        <div class="flex justify-between py-2">
+        <div
+          id="addChannelMessage"
+          class="text-sm mb-4 text-center font-medium"
+        ></div>
+        <div class="flex gap-3">
           <button
             id="cancelAddChannel"
-            class="rounded-lg font-lighter text-red-400 transition p-2"
+            class="flex-1 rounded-lg font-semibold text-gray-300 hover:bg-gray-700 transition py-3"
           >
-            CANCEL
+            Cancel
           </button>
           <button
             id="confirmAddChannel"
-            class="rounded-lg bg-sky-600 font-medium hover:bg-sky-500 transition p-2"
+            class="flex-1 btn-primary rounded-lg font-semibold text-white py-3"
           >
-            ADD
+            Add Channel
           </button>
         </div>
-        <div id="addChannelMessage" class="text-sm mt-2"></div>
       </div>
     </dialog>
 
-    <header>
-      <div
-        class="bg-neutral-700 p-3 font-bold flex justify-center items-center"
-      >
-        <div class="flex items-center justify-between w-full max-w-screen-md">
-          <div class="flex items-center gap-2">
-            <img src="https://icons.duckduckgo.com/ip3/twitch.tv.ico" alt="" />
-            <div class="text-md">Twitch Notifications</div>
-          </div>
+    <!-- Add Kick Channel Dialog -->
+    <dialog
+      id="addKickDialog"
+      class="rounded-2xl bg-gray-800 text-white w-11/12 max-w-md p-0 overflow-hidden"
+    >
+      <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
+        <h2 class="text-2xl font-bold">Add Kick Channel</h2>
+      </div>
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-semibold mb-2 text-gray-300"
+            >Kick Channel Name</label
+          >
+          <input
+            class="w-full bg-gray-700 rounded-lg text-white px-4 py-3 focus:ring-2 focus:ring-green-500 transition"
+            placeholder="Enter Kick channel name..."
+            id="addKickInput"
+            autofocus
+            autocomplete="off"
+            type="text"
+          />
+        </div>
+        <div
+          id="addKickMessage"
+          class="text-sm mb-4 text-center font-medium"
+        ></div>
+        <div class="flex gap-3">
+          <button
+            id="cancelAddKick"
+            class="flex-1 rounded-lg font-semibold text-gray-300 hover:bg-gray-700 transition py-3"
+          >
+            Cancel
+          </button>
+          <button
+            id="confirmAddKick"
+            class="flex-1 btn-success rounded-lg font-semibold text-white py-3"
+          >
+            Add Channel
+          </button>
+        </div>
+      </div>
+    </dialog>
 
-          <div>
-            <button
-              id="addButton"
-              class="bg-sky-500 p-1 rounded-full text-sm px-6"
+    <!-- Header -->
+    <header
+      class="sticky top-0 z-50 backdrop-blur-lg bg-gray-900/80 border-b border-gray-700"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center"
             >
-              ADD
-            </button>
+              <svg
+                class="w-7 h-7 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-white">
+                Twitch Notifications
+              </h1>
+              <p class="text-sm text-gray-400">
+                Manage your streaming channels
+              </p>
+            </div>
           </div>
+          <button
+            id="addButton"
+            class="btn-primary px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Channel
+          </button>
         </div>
       </div>
     </header>
-    <main class="flex items-center justify-center w-full pb-12 transition">
-      <div class="flex items-center w-full max-w-screen-2xl transition">
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div
+        id="list"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      ></div>
+      <div
+        id="emptyState"
+        class="hidden empty-state rounded-2xl p-12 text-center"
+      >
         <div
-          id="list"
-          class="flex items-center justify-center w-full flex-wrap transition"
-        ></div>
+          class="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-500/20 flex items-center justify-center"
+        >
+          <svg
+            class="w-10 h-10 text-purple-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">No Channels Yet</h3>
+        <p class="text-gray-400 mb-6">
+          Start by adding your first Twitch channel
+        </p>
+        <button
+          class="btn-primary px-6 py-3 rounded-xl font-semibold text-white inline-flex items-center gap-2"
+          onclick="document.getElementById('addButton').click()"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Add Your First Channel
+        </button>
       </div>
     </main>
 
-    <!-- Functions  -->
-    <script type="module" src="./mapChannels.js"></script>
-    <!-- <script type="module" src="/functions/getChannels.js">
-    <script type="module" src="/functions/searchChannels.js"></script>
-    -->
+    <script type="module">
+      // Store channels globally
+      window.channels = [];
 
-    <script>
-      // Open dialog
+      // Dialog handlers
       document.getElementById("addButton").onclick = () => {
         document.getElementById("addChannelDialog").showModal();
         document.getElementById("addChannelInput").value = "";
         document.getElementById("addChannelMessage").textContent = "";
       };
 
-      // Cancel dialog
       document.getElementById("cancelAddChannel").onclick = () => {
         document.getElementById("addChannelDialog").close();
       };
 
-      // Confirm add channel
       document.getElementById("confirmAddChannel").onclick = async () => {
         const channel = document.getElementById("addChannelInput").value.trim();
         const msg = document.getElementById("addChannelMessage");
         if (!channel) {
           msg.textContent = "Please enter a channel name.";
+          msg.className = "text-sm mb-4 text-center font-medium text-red-400";
           return;
         }
-        msg.textContent = "Adding...";
+        msg.textContent = "Adding channel...";
+        msg.className = "text-sm mb-4 text-center font-medium text-yellow-400";
         try {
           const res = await fetch("/api/add-channel", {
             method: "POST",
@@ -158,19 +322,405 @@
             body: JSON.stringify({ channel }),
           });
           if (res.ok) {
-            msg.textContent = "Channel added!";
+            msg.textContent = "Channel added successfully!";
+            msg.className =
+              "text-sm mb-4 text-center font-medium text-green-400";
             setTimeout(() => {
               document.getElementById("addChannelDialog").close();
               location.reload();
-              // Optionally refresh your channel list here
             }, 800);
           } else {
             msg.textContent = "Failed to add channel.";
+            msg.className = "text-sm mb-4 text-center font-medium text-red-400";
           }
         } catch (e) {
           msg.textContent = "Error connecting to server.";
+          msg.className = "text-sm mb-4 text-center font-medium text-red-400";
         }
       };
+
+      // Kick Channel Dialog
+      let selectedTwitchIdx = null;
+      document.addEventListener("click", function (e) {
+        if (e.target.closest(".add-kick-btn")) {
+          const btn = e.target.closest(".add-kick-btn");
+          selectedTwitchIdx = btn.getAttribute("data-idx");
+          document.getElementById("addKickDialog").showModal();
+          document.getElementById("addKickInput").value = "";
+          document.getElementById("addKickMessage").textContent = "";
+        }
+      });
+
+      document.getElementById("cancelAddKick").onclick = () => {
+        document.getElementById("addKickDialog").close();
+      };
+
+      document.getElementById("confirmAddKick").onclick = async () => {
+        const kickChannel = document
+          .getElementById("addKickInput")
+          .value.trim();
+        const msg = document.getElementById("addKickMessage");
+        if (!kickChannel) {
+          msg.textContent = "Please enter a Kick channel name.";
+          msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+          return;
+        }
+        msg.textContent = "Adding Kick channel...";
+        msg.className = "text-sm mb-4 text-center font-medium text-yellow-400";
+        try {
+          const twitchChannel =
+            window.channels?.[selectedTwitchIdx]?.display_name;
+          const res = await fetch("/api/add-kick-channel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ twitch: twitchChannel, kick: kickChannel }),
+          });
+          if (res.ok) {
+            msg.textContent = "Kick channel added!";
+            msg.className =
+              "text-sm mb-4 text-center font-medium text-green-400";
+            setTimeout(() => {
+              document.getElementById("addKickDialog").close();
+              location.reload();
+            }, 800);
+          } else {
+            msg.textContent = "Failed to add Kick channel.";
+            msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+          }
+        } catch (e) {
+          msg.textContent = "Error connecting to server.";
+          msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+        }
+      };
+
+      // Fetch and render channels
+      async function loadChannels() {
+        try {
+          const response = await fetch("./channels_list.txt");
+          const text = await response.text();
+          const channelsList = JSON.parse(text);
+
+          if (channelsList.length === 0) {
+            document.getElementById("emptyState").classList.remove("hidden");
+            return;
+          }
+
+          const channelsArr = channelsList.map((c) => c.name);
+          const channelsNames = channelsArr.map(
+            (e, i) => `${i === 0 ? "?" : "&"}login=${e}`
+          );
+          const channelsString = channelsNames.join("");
+          const CHANNELS_URL = `https://api.twitch.tv/helix/users${channelsString}`;
+
+          // You'll need to implement getChannels or fetch directly
+          // For now, assuming you have a way to get channel data
+          const channelsData = await fetchChannelData(
+            channelsArr,
+            CHANNELS_URL
+          );
+
+          window.channels = channelsData.map((c) => {
+            const channel = channelsList.find(
+              (ch) => c.display_name.toLowerCase() === ch.name
+            );
+            c.games = channel?.games || [];
+            c.kick = channel?.kick || null;
+            return c;
+          });
+
+          renderChannels(window.channels);
+        } catch (error) {
+          console.error("Error loading channels:", error);
+        }
+      }
+
+      let configs = {
+        token: "",
+      };
+
+      const getChannels = async (e) => {
+        const TWITCH_CLIENT_ID = "g23nf3u0ej1o7jkzi04q93n735jawx";
+        const TWITCH_SECRET = "ir8jymwkw9xlf0u9moj0hochqry2z0";
+        const TOKEN_URL = `https://id.twitch.tv/oauth2/token?client_id=${TWITCH_CLIENT_ID}&client_secret=${TWITCH_SECRET}&grant_type=client_credentials`;
+
+        const options = {
+          method: "POST",
+          json: true,
+        };
+
+        const token = await fetch(TOKEN_URL, options);
+        const res = await token.json();
+
+        configs.token = res.access_token;
+
+        if (configs.token) {
+          const get_channels_options = {
+            method: "GET",
+            headers: {
+              "Client-ID": TWITCH_CLIENT_ID,
+              Authorization: "Bearer " + configs.token,
+            },
+          };
+
+          const channels = await fetch(e.url, get_channels_options);
+          const channels_res = await channels.json();
+
+          return channels_res.data;
+        }
+      };
+
+      async function fetchChannelData(channels, url) {
+        try {
+          const channelsData = await getChannels({ url });
+          return channelsData || [];
+        } catch (error) {
+          console.error("Error fetching channel data:", error);
+          return [];
+        }
+      }
+
+      function renderChannels(channels) {
+        const listElement = document.getElementById("list");
+
+        listElement.innerHTML = channels
+          .sort((a, b) => a.display_name.localeCompare(b.display_name))
+          .map(
+            (c, idx) => `
+            <div class="channel-card rounded-2xl overflow-hidden shadow-xl">
+              <!-- Channel Banner -->
+              <div class="relative h-40 overflow-hidden">
+                <img
+                  class="w-full h-full object-cover"
+                  src="${
+                    c.offline_image_url ||
+                    "https://static.vecteezy.com/system/resources/thumbnails/053/821/289/small_2x/offline-glitch-banner-glitch-effect-offline-video.jpg"
+                  }"
+                  alt="${c.display_name} banner"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
+              </div>
+
+              <!-- Channel Info -->
+              <div class="p-5">
+                <div class="flex items-start gap-4 mb-4">
+                  <img 
+                    class="w-16 h-16 rounded-full border-4 border-gray-700 -mt-10 relative z-10" 
+                    src="${c.profile_image_url}" 
+                    alt="${c.display_name}"
+                  />
+                  <div class="flex-1 mt-2">
+                    <a 
+                      href="https://twitch.tv/${c.display_name}" 
+                      target="_blank"
+                      class="text-lg font-bold text-white hover:text-purple-400 transition block"
+                    >
+                      ${c.display_name}
+                    </a>
+                    <p class="text-sm text-gray-400 line-clamp-2" title="${
+                      c.description || "No description"
+                    }">
+                      ${c.description || "No description available"}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Kick Channel Display Section -->
+                ${
+                  c.kick
+                    ? `
+                  <div class="mb-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg p-3">
+                    <div class="flex items-center gap-2">
+                      <img src="/kick.svg" alt="Kick" class="fill-white w-4 h-4 mr-1" />
+                      <div class="flex-1">
+                        <div class="text-xs font-semibold text-green-400 uppercase tracking-wide">Kick Channel</div>
+                        <a 
+                          href="https://kick.com/${c.kick}" 
+                          target="_blank"
+                          class="text-sm font-bold text-white capitalize hover:text-green-400 transition"
+                        >
+                          ${c.kick}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                `
+                    : ""
+                }
+
+                <!-- Games Section -->
+                ${
+                  c.games.length > 0
+                    ? `
+                  <div class="mb-4">
+                    <div class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">Tracked Games</div>
+                    <div class="flex flex-wrap gap-2">
+                      ${c.games
+                        .map(
+                          (g, gameIdx) => `
+                        <span class="game-tag inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium text-purple-300">
+                          ${g}
+                          <button 
+                            class="remove-game-btn hover:text-red-400 transition" 
+                            data-idx="${idx}" 
+                            data-game-idx="${gameIdx}"
+                            title="Remove game"
+                          >
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                          </button>
+                        </span>
+                      `
+                        )
+                        .join("")}
+                    </div>
+                  </div>
+                `
+                    : ""
+                }
+
+                <!-- Add Game -->
+                <div class="flex gap-2 mb-4">
+                  <input 
+                    type="text" 
+                    placeholder="Add game to track..." 
+                    class="add-game-input flex-1 bg-gray-700 text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 transition" 
+                    data-idx="${idx}"
+                  />
+                  <button 
+                    class="add-game-btn btn-success px-4 py-2 rounded-lg text-sm font-semibold text-white whitespace-nowrap"
+                    data-idx="${idx}"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-2">
+                  <button 
+                    class="add-kick-btn btn-kick flex-1 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2"
+                    data-idx="${idx}"
+                  >
+                    <img src="/kick.svg" alt="Kick" class="w-4 h-4 mr-1" />
+                    ${c.kick ? "Update Kick" : "Add Kick"}
+                  </button>
+                  <button 
+                    class="remove-channel-btn btn-danger px-4 py-2 rounded-lg text-sm font-semibold text-white"
+                    data-idx="${idx}"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          `
+          )
+          .join("");
+
+        // Attach event listeners
+        attachEventListeners();
+      }
+
+      function attachEventListeners() {
+        // Add Game
+        document.querySelectorAll(".add-game-btn").forEach((btn) => {
+          btn.onclick = async () => {
+            const idx = btn.getAttribute("data-idx");
+            const input = document.querySelector(
+              `.add-game-input[data-idx="${idx}"]`
+            );
+            const game = input.value.trim();
+            if (!game) return;
+
+            await fetch("/api/add-game", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                channel: window.channels[idx].display_name,
+                game,
+              }),
+            });
+            input.value = "";
+            location.reload();
+          };
+        });
+
+        // Remove Channel
+        document.querySelectorAll(".remove-channel-btn").forEach((btn) => {
+          btn.onclick = async () => {
+            const idx = btn.getAttribute("data-idx");
+            if (
+              !confirm(`Remove channel ${window.channels[idx].display_name}?`)
+            )
+              return;
+
+            await fetch("/api/remove-channel", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                channel: window.channels[idx].display_name,
+              }),
+            });
+            location.reload();
+          };
+        });
+
+        // Remove Game
+        document.querySelectorAll(".remove-game-btn").forEach((btn) => {
+          btn.onclick = async () => {
+            const idx = btn.getAttribute("data-idx");
+            const gameIdx = btn.getAttribute("data-game-idx");
+            const channelName = window.channels[idx].display_name;
+            const gameName = window.channels[idx].games[gameIdx];
+
+            if (!confirm(`Remove game "${gameName}" from ${channelName}?`))
+              return;
+
+            await fetch("/api/remove-game", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ channel: channelName, game: gameName }),
+            });
+            location.reload();
+          };
+        });
+      }
+
+      // Service Worker Registration
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").then(function (reg) {
+          const key =
+            "BO3X9jaW74ubvrJv8BUZN2-9WoWil6tp2aD-27UHjMEi3EoF_P1DZoLE34FY4p4BPTYTf43zQ5fXmsyXxy--oLw";
+          reg.pushManager
+            .subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlBase64ToUint8Array(key),
+            })
+            .then(function (subscription) {
+              fetch("/api/subscribe", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(subscription),
+              });
+            });
+        });
+
+        function urlBase64ToUint8Array(base64String) {
+          const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+          const base64 = (base64String + padding)
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+          const rawData = window.atob(base64);
+          const outputArray = new Uint8Array(rawData.length);
+          for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+          }
+          return outputArray;
+        }
+      }
+
+      // Initialize
+      loadChannels();
     </script>
   </body>
 </html>
