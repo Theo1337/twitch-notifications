@@ -215,6 +215,24 @@ setInterval(() => {
 
 app.get("/getFavChannels", async (req, res) => {
   const getChannels = require("./functions/getChannels");
+
+  const token = access_token;
+
+  const favChannels = await getChannels({
+    channels: channels,
+    token: token,
+    type: "all",
+  });
+
+  favChannels.forEach((c) => {
+    c.kick_live = {};
+  });
+
+  res.status(200).send(favChannels);
+});
+
+app.get("/getKickChannels", async (req, res) => {
+  const getChannels = require("./functions/getChannels");
   const getKickChannels = require("./functions/getKickChannels");
 
   const token = access_token;
@@ -224,6 +242,7 @@ app.get("/getFavChannels", async (req, res) => {
     token: token,
     type: "all",
   });
+
   const kickChannels = await getKickChannels({ channels: channels });
 
   favChannels.forEach((c) => {
@@ -233,7 +252,7 @@ app.get("/getFavChannels", async (req, res) => {
     c.kick_live = kick || {};
   });
 
-  res.send(favChannels);
+  res.status(200).send(favChannels);
 });
 
 app.post("/api/add-channel", (req, res) => {

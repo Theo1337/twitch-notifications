@@ -39,7 +39,8 @@
     "name": "bethuueel",
     "games": [
       "Minecraft"
-    ]
+    ],
+    "kick": "tmi98"
   },
   {
     "name": "yoda",
