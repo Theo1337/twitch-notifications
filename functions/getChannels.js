@@ -59,17 +59,23 @@ const getChannels = async (el) => {
         streams.push({
           ...channel,
           kick: users.find((u) => u.name === channel.user_login)?.kick,
+          youtube: users.find((u) => u.name === channel.user_login)?.youtube,
         });
       });
     });
   }
 
   if (el.type === "all") {
-    // Mark offline channels
-    const offlineWithType = offlineChannels.data?.map((c) => ({
+    // Mark offline channels — ensure offlineChannels.data is always an array
+    const offlineData = Array.isArray(offlineChannels?.data)
+      ? offlineChannels.data
+      : [];
+
+    const offlineWithType = offlineData.map((c) => ({
       ...c,
       type: "offline",
       kick: users.find((u) => u.name === c.login)?.kick,
+      youtube: users.find((u) => u.name === c.login)?.youtube,
     }));
 
     // Merge and deduplicate, prefer live
@@ -86,7 +92,7 @@ const getChannels = async (el) => {
       } else {
         // If already added and this is live, replace
         const idx = uniqueChannels.findIndex(
-          (ch) => (ch.user_id || ch.id) === id
+          (ch) => (ch.user_id || ch.id) === id,
         );
         if (channel.type === "live" && uniqueChannels[idx].type !== "live") {
           uniqueChannels[idx] = channel;

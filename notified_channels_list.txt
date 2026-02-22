@@ -1,6 +1,14 @@
 [
   {
-    "name": "alanzoka",
+    "name": "gaules",
+    "games": []
+  },
+  {
+    "name": "sacy",
+    "games": []
+  },
+  {
+    "name": "coreano",
     "games": []
   }
 ]

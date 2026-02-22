@@ -10,7 +10,7 @@ app.get("/", (request, response) => {
   const ping = new Date();
   ping.setHours(ping.getHours() - 3);
   console.log(
-    `Ping recebido às ${ping.getUTCHours()}:${ping.getUTCMinutes()}:${ping.getUTCSeconds()}`
+    `Ping recebido às ${ping.getUTCHours()}:${ping.getUTCMinutes()}:${ping.getUTCSeconds()}`,
   );
   response.sendFile("./src/index.html", { root: __dirname });
 });
@@ -27,9 +27,7 @@ app.get("/serverStatus", (req, res) => {
 
 let access_token;
 let notifiedChannels;
-let ytNotifiedChannels;
 let channels;
-let ytChannels;
 let subscriptions = []; // In production, store in a DB
 
 const fs = require("fs");
@@ -59,13 +57,13 @@ const getData = () => {
   try {
     const channels_value = fs.readFileSync(
       "./public/channels_list.txt",
-      "utf-8"
+      "utf-8",
     );
     channels = JSON.parse(channels_value) || [];
 
     const subscriptions_value = fs.readFileSync(
       "./public/subscriptions.txt",
-      "utf-8"
+      "utf-8",
     );
     subscriptions = JSON.parse(subscriptions_value) || [];
   } catch (error) {
@@ -76,7 +74,7 @@ const getData = () => {
   try {
     const notified_value = fs.readFileSync(
       "notified_channels_list.txt",
-      "utf-8"
+      "utf-8",
     );
     notifiedChannels = JSON.parse(notified_value) || [];
   } catch (error) {
@@ -106,12 +104,12 @@ const getChannels = async (el) => {
   if (channels.length > 0) {
     const res = await getTwtChannels({ channels: channels, token: token });
     const notified_live_channels = channels?.filter((e) =>
-      res?.some(({ user_name }) => e.name === user_name.toLowerCase())
+      res?.some(({ user_name }) => e.name === user_name.toLowerCase()),
     );
 
     const livesToNotify = res?.filter(
       ({ user_name }) =>
-        !notifiedChannels?.some((e) => e.name === user_name.toLowerCase())
+        !notifiedChannels?.some((e) => e.name === user_name.toLowerCase()),
     );
 
     livesToNotify.forEach((ch) => {
@@ -123,15 +121,15 @@ const getChannels = async (el) => {
     if (notifiedChannels.length > 0 || notifiedChannels) {
       res.forEach((ch) => {
         const current = channels?.filter(
-          (e) => ch.user_name.toLowerCase() === e.name
+          (e) => ch.user_name.toLowerCase() === e.name,
         );
         ch.games = current[0].games;
 
         const current_notified = notifiedChannels?.filter(
-          (e) => e.name === ch.user_name.toLowerCase()
+          (e) => e.name === ch.user_name.toLowerCase(),
         );
         const gamesToNotify = ch.games?.filter(
-          (c) => !current_notified[0].games.some((e) => e === c)
+          (c) => !current_notified[0].games.some((e) => e === c),
         );
 
         gamesToNotify?.forEach((g) => {
@@ -145,7 +143,7 @@ const getChannels = async (el) => {
     }
 
     notifiedChannels = notifiedChannels.filter(({ name }) =>
-      notified_live_channels?.some((e) => e.name === name)
+      notified_live_channels?.some((e) => e.name === name),
     );
     saveNotifiedData();
   }
@@ -164,44 +162,6 @@ const tokenFunction = async () => {
   }
 };
 
-// const getYtChannels = async () => {
-//   const {
-//     setIdForChannel,
-//     getChannelLive,
-//   } = require("./functions/getYoutubeChannel");
-
-//   const res = await getChannelLive({ channels: ytChannels });
-
-//   const yt_channels_to_notify = res?.filter(
-//     (e) => !ytNotifiedChannels?.some(({ id }) => e.id === id)
-//   );
-
-//   const saveYtNotifiedData = () => {
-//     const fs = require("fs");
-//     const value = JSON.stringify(ytNotifiedChannels);
-
-//     fs.writeFileSync("./public/yt_notified_channels_list.txt", value, "utf-8");
-//   };
-
-//   yt_channels_to_notify.forEach((c) => {
-//     if (!c.id) {
-//       console.log("Setting id for channel: " + c.name);
-//       setIdForChannel({ c, channels: ytChannels });
-//     } else {
-//       console.log("Notifying channel: " + c.name);
-
-//       notifyUser(c);
-//       ytNotifiedChannels.push({ name: c.name, id: c.id });
-//       saveYtNotifiedData();
-//     }
-//   });
-
-//   // ytNotifiedChannels = ytNotifiedChannels.filter(({ name }) =>
-//   //   yt_channels_to_notify?.some((e) => e.name === name)
-//   // );
-//   // saveYtNotifiedData();
-// };
-
 setInterval(() => {
   if (access_token) {
     console.log("Refreshing content!");
@@ -209,8 +169,6 @@ setInterval(() => {
 
     console.clear();
   }
-
-  // getYtChannels();
 }, 90000);
 
 app.get("/getFavChannels", async (req, res) => {
@@ -231,9 +189,10 @@ app.get("/getFavChannels", async (req, res) => {
   res.status(200).send(favChannels);
 });
 
-app.get("/getKickChannels", async (req, res) => {
+app.get("/getAlternativeStreams", async (req, res) => {
   const getChannels = require("./functions/getChannels");
   const getKickChannels = require("./functions/getKickChannels");
+  const getYoutubeLive = require("./functions/getYoutubeLive");
 
   const token = access_token;
 
@@ -245,12 +204,68 @@ app.get("/getKickChannels", async (req, res) => {
 
   const kickChannels = await getKickChannels({ channels: channels });
 
-  favChannels.forEach((c) => {
-    const kick = kickChannels.find(
-      (k) => k.slug?.toLowerCase() === c.kick?.toLowerCase()
-    );
-    c.kick_live = kick || {};
+  if (!Array.isArray(favChannels) || favChannels.length === 0)
+    return favChannels;
+
+  await Promise.all(
+    favChannels.map(async (c) => {
+      const kick = kickChannels.find(
+        (k) => k.slug?.toLowerCase() === c.kick?.toLowerCase(),
+      );
+      c.kick_live = kick || {};
+
+      if (!c.youtube) {
+        c.youtube_live = {};
+        return;
+      }
+      try {
+        const live = await getYoutubeLive({ id: c.youtube });
+        c.youtube_live = live || {};
+      } catch (err) {
+        console.error(
+          `getYoutubeLive error for ${c.youtube}:`,
+          err.message || err,
+        );
+        c.youtube_live = {};
+      }
+    }),
+  );
+
+  res.status(200).send(favChannels);
+});
+
+app.get("/getYoutubeChannels", async (req, res) => {
+  const getChannels = require("./functions/getChannels");
+
+  const token = access_token;
+
+  const favChannels = await getChannels({
+    channels: channels,
+    token: token,
+    type: "all",
   });
+
+  if (!Array.isArray(favChannels) || favChannels.length === 0)
+    return favChannels;
+
+  await Promise.all(
+    favChannels.map(async (c) => {
+      if (!c.youtube) {
+        c.youtube_live = {};
+        return;
+      }
+      try {
+        const live = await getYoutubeLive({ id: c.youtube });
+        c.youtube_live = live || {};
+      } catch (err) {
+        console.error(
+          `getYoutubeLive error for ${c.youtube}:`,
+          err.message || err,
+        );
+        c.youtube_live = {};
+      }
+    }),
+  );
 
   res.status(200).send(favChannels);
 });
@@ -312,7 +327,7 @@ app.post("/api/add-kick-channel", (req, res) => {
 webpush.setVapidDetails(
   "mailto:your@email.com",
   process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
+  process.env.VAPID_PRIVATE_KEY,
 );
 
 app.post("/api/subscribe", (req, res) => {
@@ -321,7 +336,7 @@ app.post("/api/subscribe", (req, res) => {
   const subscription = req.body;
   // Check for existing subscription by endpoint
   const alreadySubscribed = subscriptions.some(
-    (sub) => sub.endpoint === subscription.endpoint
+    (sub) => sub.endpoint === subscription.endpoint,
   );
   if (!alreadySubscribed) {
     subscriptions.push(subscription);
@@ -332,4 +347,3 @@ app.post("/api/subscribe", (req, res) => {
 
 getData();
 tokenFunction();
-// getYtChannels();

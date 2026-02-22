@@ -14,9 +14,10 @@
     "name": "cellbit",
     "games": [
       "Minecraft",
-      "Marvel's Spider-Man 2",
-      "Among Us"
-    ]
+      "Among Us",
+      "Ghost Town"
+    ],
+    "kick": "cellbit"
   },
   {
     "name": "bagi",
@@ -29,7 +30,8 @@
       "Phantom Abyss",
       "The Long Drive"
     ],
-    "kick": "Felps"
+    "kick": "Felps",
+    "youtube": "UCQ93zfIBKjL3QGHGQ084cUA"
   },
   {
     "name": "sotibllec",
@@ -39,8 +41,7 @@
     "name": "bethuueel",
     "games": [
       "Minecraft"
-    ],
-    "kick": "tmi98"
+    ]
   },
   {
     "name": "yoda",
@@ -48,7 +49,24 @@
     "kick": "Yoda"
   },
   {
-    "name": "alanzoka",
+    "name": "gregszin_",
     "games": []
+  },
+  {
+    "name": "sacy",
+    "games": [],
+    "youtube": "UC9Qx5N_X7p2nTwPfoKXPQeA"
+  },
+  {
+    "name": "gaules",
+    "games": [],
+    "kick": "gaules",
+    "youtube": "UC5ZTRH1zclthyc6b_D3m2Pw"
+  },
+  {
+    "name": "coreano",
+    "games": [],
+    "kick": "coreano",
+    "youtube": "UCOjtyQOi3MR8XOys0WNfkJg"
   }
 ]
