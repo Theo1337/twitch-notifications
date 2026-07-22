@@ -4,69 +4,153 @@
     "games": [
       "Minecraft",
       "The Long Drive"
+    ],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
     ]
   },
   {
     "name": "calango",
-    "games": []
-  },
-  {
-    "name": "cellbit",
-    "games": [
-      "Minecraft",
-      "Among Us",
-      "Ghost Town"
-    ],
-    "kick": "cellbit"
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
   },
   {
     "name": "bagi",
-    "games": []
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
   },
   {
     "name": "felps",
     "games": [
-      "Minecraft",
       "Phantom Abyss",
       "The Long Drive"
     ],
     "kick": "Felps",
-    "youtube": "UCQ93zfIBKjL3QGHGQ084cUA"
-  },
-  {
-    "name": "sotibllec",
-    "games": []
+    "youtube": "UCQ93zfIBKjL3QGHGQ084cUA",
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
   },
   {
     "name": "bethuueel",
-    "games": [
-      "Minecraft"
+    "games": [],
+    "youtube": "111",
+    "priority": [
+      "ytb",
+      "twt",
+      "kick"
     ]
   },
   {
     "name": "yoda",
     "games": [],
-    "kick": "Yoda"
+    "kick": "Yoda",
+    "priority": [
+      "kick",
+      "twt",
+      "ytb"
+    ]
   },
   {
     "name": "gregszin_",
-    "games": []
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
   },
   {
     "name": "sacy",
     "games": [],
-    "youtube": "UC9Qx5N_X7p2nTwPfoKXPQeA"
+    "youtube": "UC9Qx5N_X7p2nTwPfoKXPQeA",
+    "kick": "sacy",
+    "priority": [
+      "kick",
+      "ytb",
+      "twt"
+    ]
   },
   {
     "name": "gaules",
     "games": [],
     "kick": "gaules",
-    "youtube": "UC5ZTRH1zclthyc6b_D3m2Pw"
+    "youtube": "UC5ZTRH1zclthyc6b_D3m2Pw",
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
   },
   {
     "name": "coreano",
     "games": [],
     "kick": "coreano",
-    "youtube": "UCOjtyQOi3MR8XOys0WNfkJg"
+    "youtube": "UCOjtyQOi3MR8XOys0WNfkJg",
+    "priority": [
+      "kick",
+      "ytb",
+      "twt"
+    ]
+  },
+  {
+    "name": "brawlhalla",
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
+  },
+  {
+    "name": "northernlion",
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
+  },
+  {
+    "name": "sotibllec",
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
+  },
+  {
+    "name": "alanzoka",
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
+  },
+  {
+    "name": "cellbit",
+    "games": [
+      "Welcome to the Game III"
+    ],
+    "kick": "Cellbit",
+    "priority": [
+      "twt",
+      "kick",
+      "ytb"
+    ]
   }
 ]

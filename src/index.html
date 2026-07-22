@@ -32,11 +32,6 @@
         background: linear-gradient(145deg, #2d3748 0%, #1a202c 100%);
       }
 
-      .channel-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      }
-
       .btn-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         transition: all 0.3s ease;
@@ -76,6 +71,22 @@
         transform: scale(1.05);
       }
 
+      .btn-ytb {
+        background: #FF0033;
+        color: #fff;
+        font-weight: 700;
+      }
+      
+      .btn-ytb:hover {
+        background: #FF0033;
+        transform: scale(1.05);
+      }
+      .btn-twt {
+        background: #9146FF;
+        color: #fff;
+        font-weight: 700;
+      }
+      
       .game-tag {
         background: rgba(139, 92, 246, 0.2);
         border: 1px solid rgba(139, 92, 246, 0.4);
@@ -185,6 +196,49 @@
       </div>
     </dialog>
 
+    <!-- Add Youtube Channel Dialog -->
+    <dialog
+      id="addYoutubeDialog"
+      class="rounded-2xl bg-gray-800 text-white w-11/12 max-w-md p-0 overflow-hidden"
+    >
+      <div class="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
+        <h2 class="text-2xl font-bold">Add Youtube Channel</h2>
+      </div>
+      <div class="p-6">
+        <div class="mb-4">
+          <label class="block text-sm font-semibold mb-2 text-gray-300"
+            >Youtube Channel Id</label
+          >
+          <input
+            class="w-full bg-gray-700 rounded-lg text-white px-4 py-3 focus:ring-2 focus:ring-green-500 transition"
+            placeholder="Enter Youtube channel id..."
+            id="addYoutubeInput"
+            autofocus
+            autocomplete="off"
+            type="text"
+          />
+        </div>
+        <div
+          id="addYoutubeMessage"
+          class="text-sm mb-4 text-center font-medium"
+        ></div>
+        <div class="flex gap-3">
+          <button
+            id="cancelAddYoutube"
+            class="flex-1 rounded-lg font-semibold text-gray-300 hover:bg-gray-700 transition py-3"
+          >
+            Cancel
+          </button>
+          <button
+            id="confirmAddYoutube"
+            class="flex-1 btn-success rounded-lg font-semibold text-white py-3"
+          >
+            Add Channel
+          </button>
+        </div>
+      </div>
+    </dialog>
+
     <!-- Header -->
     <header
       class="sticky top-0 z-50 backdrop-blur-lg bg-gray-900/80 border-b border-gray-700"
@@ -214,25 +268,30 @@
               </p>
             </div>
           </div>
-          <button
-            id="addButton"
-            class="btn-primary px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div class="flex items-center gap-4">
+            <div id="notificationStatus" class="hidden text-sm">
+              <!-- Notification status will be shown here -->
+            </div>
+            <button
+              id="addButton"
+              class="btn-primary px-6 py-3 rounded-xl font-semibold text-white flex items-center gap-2"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            Add Channel
-          </button>
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Add Channel
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -393,6 +452,60 @@
         }
       };
 
+      // Youtube Dialog
+      document.addEventListener("click", function (e) {
+        if (e.target.closest(".add-ytb-btn")) {
+          const btn = e.target.closest(".add-ytb-btn");
+          selectedTwitchIdx = btn.getAttribute("data-idx");
+          document.getElementById("addYoutubeDialog").showModal();
+          document.getElementById("addYoutubeInput").value = "";
+          document.getElementById("addYoutubeMessage").textContent = "";
+        }
+      });
+
+      document.getElementById("cancelAddYoutube").onclick = () => {
+        document.getElementById("addYoutubeDialog").close();
+      };
+
+      document.getElementById("confirmAddYoutube").onclick = async () => {
+        const youtubeChannel = document
+          .getElementById("addYoutubeInput")
+          .value.trim();
+        const msg = document.getElementById("addYoutubeMessage");
+        if (!youtubeChannel) {
+          msg.textContent = "Please enter a Youtube channel ID.";
+          msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+          return;
+        }
+        msg.textContent = "Adding Youtube channel...";
+        msg.className = "text-sm mb-4 text-center font-medium text-yellow-400";
+        try {
+          const twitchChannel =
+            window.channels?.[selectedTwitchIdx]?.display_name;
+          const res = await fetch("/api/add-youtube-channel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ twitch: twitchChannel, youtube: youtubeChannel }),
+          });
+          if (res.ok) {
+            msg.textContent = "Youtube channel added!";
+            msg.className =
+              "text-sm mb-4 text-center font-medium text-green-400";
+            setTimeout(() => {
+              document.getElementById("addYoutubeDialog").close();
+              location.reload();
+            }, 800);
+          } else {
+            msg.textContent = "Failed to add Youtube channel.";
+            msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+          }
+        } catch (e) {
+          msg.textContent = "Error connecting to server.";
+          msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+        }
+      };
+
+
       // Fetch and render channels
       async function loadChannels() {
         try {
@@ -425,6 +538,8 @@
             );
             c.games = channel?.games || [];
             c.kick = channel?.kick || null;
+            c.youtube = channel?.youtube || null;
+            c.priority = normalizePriority(channel?.priority);
             return c;
           });
 
@@ -437,6 +552,7 @@
       let configs = {
         token: "",
       };
+
 
       const getChannels = async (e) => {
         const TWITCH_CLIENT_ID = "g23nf3u0ej1o7jkzi04q93n735jawx";
@@ -479,9 +595,30 @@
         }
       }
 
+      function normalizePriority(priority) {
+        const allowed = ["twt", "ytb", "kick"];
+        const normalized = [];
+
+        (Array.isArray(priority) ? priority : []).forEach((value) => {
+          const item = String(value).toLowerCase();
+          if (allowed.includes(item) && !normalized.includes(item)) {
+            normalized.push(item);
+          }
+        });
+
+        allowed.forEach((value) => {
+          if (!normalized.includes(value)) {
+            normalized.push(value);
+          }
+        });
+
+        return normalized;
+      }
+
       function renderChannels(channels) {
         const listElement = document.getElementById("list");
 
+        console.log(channels);
         listElement.innerHTML = channels
           .sort((a, b) => a.display_name.localeCompare(b.display_name))
           .map(
@@ -525,27 +662,50 @@
                 </div>
 
                 <!-- Kick Channel Display Section -->
-                ${
-                  c.kick
-                    ? `
-                  <div class="mb-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg p-3">
-                    <div class="flex items-center gap-2">
-                      <img src="/kick.svg" alt="Kick" class="fill-white w-4 h-4 mr-1" />
-                      <div class="flex-1">
-                        <div class="text-xs font-semibold text-green-400 uppercase tracking-wide">Kick Channel</div>
-                        <a 
-                          href="https://kick.com/${c.kick}" 
-                          target="_blank"
-                          class="text-sm font-bold text-white capitalize hover:text-green-400 transition"
-                        >
-                          ${c.kick}
-                        </a>
+                <div class="flex gap-2">
+                  ${
+                    c.kick
+                      ? `
+                    <div class="mb-4 w-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg p-3">
+                      <div class="flex items-center gap-2">
+                        <img src="/kick.svg" alt="Kick" class="fill-white w-4 h-4 mr-1" />
+                        <div class="flex-1">
+                          <div class="text-xs font-semibold text-green-400 uppercase tracking-wide">Kick</div>
+                          <a
+                            href="https://kick.com/${c.kick}"
+                            target="_blank"
+                            class="text-sm font-bold text-white capitalize hover:text-green-400 transition"
+                          >
+                            ${c.kick}
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                `
-                    : ""
-                }
+                  `
+                      : ""
+                  }
+                  ${
+                    c.youtube
+                      ? `
+                    <div class="mb-4 w-full bg-gradient-to-r from-red-500/10 to-red-500/10 border border-red-500/30 rounded-lg p-3">
+                      <div class="flex items-center gap-2">
+                        <img src="/youtube.png" alt="Kick" class="fill-white w-8 h-8 mr-1" />
+                        <div class="flex-1">
+                          <div class="text-xs font-semibold text-red-400 uppercase tracking-wide">Youtube</div>
+                          <a
+                            href="https://youtube.com/channel/${c.youtube}"
+                            target="_blank"
+                            class="text-sm font-bold text-white capitalize hover:text-red-400 transition"
+                          >
+                            ${c.display_name}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  `
+                      : ""
+                  }
+                </div>
 
                 <!-- Games Section -->
                 ${
@@ -595,22 +755,59 @@
                   </button>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="flex gap-2">
-                  <button 
-                    class="add-kick-btn btn-kick flex-1 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2"
-                    data-idx="${idx}"
-                  >
-                    <img src="/kick.svg" alt="Kick" class="w-4 h-4 mr-1" />
-                    ${c.kick ? "Update Kick" : "Add Kick"}
-                  </button>
-                  <button 
-                    class="remove-channel-btn btn-danger px-4 py-2 rounded-lg text-sm font-semibold text-white"
-                    data-idx="${idx}"
-                  >
-                    Remove
-                  </button>
+                <!-- Priority Order -->
+                <div class="mb-4">
+                  <div class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">
+                    Priority order
+                  </div>
+                  <div class="flex gap-2">
+                    ${normalizePriority(c.priority)
+                      .map((platform) => {
+                        const labels = {
+                          twt: { label: "Twitch", icon: "<img src=\"/twitch.png\" alt=\"Twitch\" class=\"w-4 h-4\" />", class: "btn-twt", color: "border-[#9146FF]" },
+                          ytb: { label: "YouTube", icon: "<img src=\"/youtube.png\" alt=\"YouTube\" class=\"w-4 h-4\" />", class: "btn-ytb", color: "border-[#FF0033]" },
+                          kick: { label: "Kick", icon: "<img src=\"/kick.svg\" alt=\"Kick\" class=\"w-4 h-4\" />", class: "btn-kick", color: "border-[#53FC18]" },
+                        };
+                        const config = labels[platform] || { label: platform, icon: "" };
+                        const isConfigured =
+                          (platform === "kick" && c.kick) ||
+                          (platform === "ytb" && c.youtube) ||
+                          platform === "twt";
+
+                        return `
+                          <button
+                            type="button"
+                            class="priority-platform-btn flex-1 px-3 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 border transition ${
+                              isConfigured
+                                ? `${config.class} text-white ${config.color} hover:${config.color}/80`
+                                : `bg-gray-800/70 text-gray-400 ${config.color} hover:${config.color}/50`
+                            }"
+                            data-idx="${idx}"
+                            data-platform="${platform}"
+                            draggable="true"
+                          >
+                            ${config.icon}
+                            <span>${config.label}</span>
+                          </button>
+                        `;
+                      })
+                      .join("")}
+                  </div>
+                  <div class="text-[11px] text-gray-500 mt-2">
+                    Drag the platforms to change the priority order.
+                  </div>
                 </div>
+
+                <div class="py-2">
+                    <button
+                      class="border uppercase text-xs border-red-500 bg-red-500 hover:bg-red-500/40 transition w-full text-center gap-4 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-semibold text-white"
+                      data-idx="${idx}"
+                      draggable
+                    >
+                      <img src="/trash.svg" alt="delete" class="w-4 h-4" />
+                      Delete Channel
+                    </button>
+                  </div>
               </div>
             </div>
           `
@@ -622,6 +819,100 @@
       }
 
       function attachEventListeners() {
+        document.querySelectorAll(".priority-platform-btn").forEach((btn) => {
+          btn.ondragstart = (event) => {
+            event.dataTransfer.effectAllowed = "move";
+            window.draggedPriority = {
+              idx: Number(btn.getAttribute("data-idx")),
+              platform: btn.getAttribute("data-platform"),
+            };
+          };
+
+          btn.ondragover = (event) => {
+            event.preventDefault();
+            btn.classList.add("ring-2", "ring-purple-400");
+          };
+
+          btn.ondragleave = () => {
+            btn.classList.remove("ring-2", "ring-purple-400");
+          };
+
+          btn.ondrop = async (event) => {
+            event.preventDefault();
+            btn.classList.remove("ring-2", "ring-purple-400");
+
+            const source = window.draggedPriority;
+            const target = {
+              idx: Number(btn.getAttribute("data-idx")),
+              platform: btn.getAttribute("data-platform"),
+            };
+
+            if (!source || source.idx !== target.idx) {
+              window.draggedPriority = null;
+              return;
+            }
+
+            const channel = window.channels?.[target.idx];
+            if (!channel) {
+              window.draggedPriority = null;
+              return;
+            }
+
+            const currentPriority = normalizePriority(channel.priority);
+            const fromIndex = currentPriority.indexOf(source.platform);
+            const toIndex = currentPriority.indexOf(target.platform);
+
+            if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
+              window.draggedPriority = null;
+              return;
+            }
+
+            const nextPriority = [...currentPriority];
+            const [moved] = nextPriority.splice(fromIndex, 1);
+            nextPriority.splice(toIndex, 0, moved);
+
+            channel.priority = normalizePriority(nextPriority);
+            await fetch("/api/update-priority-order", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                channel: channel.display_name,
+                priority: channel.priority,
+              }),
+            });
+
+            renderChannels(window.channels);
+            window.draggedPriority = null;
+          };
+
+          btn.ondragend = () => {
+            window.draggedPriority = null;
+            document.querySelectorAll(".priority-platform-btn").forEach((el) => {
+              el.classList.remove("ring-2", "ring-purple-400");
+            });
+          };
+
+          btn.onclick = async (event) => {
+            const channelIdx = Number(btn.getAttribute("data-idx"));
+            const platform = btn.getAttribute("data-platform");
+            if (platform === "twt") return;
+
+            selectedTwitchIdx = channelIdx;
+            if (platform === "kick") {
+              document.getElementById("addKickDialog").showModal();
+              document.getElementById("addKickInput").value = "";
+              document.getElementById("addKickMessage").textContent = "";
+              return;
+            }
+
+            if (platform === "ytb") {
+              document.getElementById("addYoutubeDialog").showModal();
+              document.getElementById("addYoutubeInput").value = "";
+              document.getElementById("addYoutubeMessage").textContent = "";
+            }
+          };
+        });
+
         // Add Game
         document.querySelectorAll(".add-game-btn").forEach((btn) => {
           btn.onclick = async () => {
@@ -687,36 +978,132 @@
       }
 
       // Service Worker Registration
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js").then(function (reg) {
-          const key =
-            "BO3X9jaW74ubvrJv8BUZN2-9WoWil6tp2aD-27UHjMEi3EoF_P1DZoLE34FY4p4BPTYTf43zQ5fXmsyXxy--oLw";
-          reg.pushManager
-            .subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: urlBase64ToUint8Array(key),
-            })
-            .then(function (subscription) {
+      if ("serviceWorker" in navigator && "Notification" in window) {
+        navigator.serviceWorker.register("/sw.js").then(async function (reg) {
+          console.log("Service Worker registered");
+
+          // Check notification permission
+          let permission = Notification.permission;
+
+          if (permission === "default") {
+            // Request permission
+            permission = await Notification.requestPermission();
+          }
+
+          if (permission === "granted") {
+            console.log("Notification permission granted");
+
+            const key = "BO3X9jaW74ubvrJv8BUZN2-9WoWil6tp2aD-27UHjMEi3EoF_P1DZoLE34FY4p4BPTYTf43zQ5fXmsyXxy--oLw";
+            try {
+              const subscription = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(key),
+              });
+
+              console.log("Push subscription successful");
               fetch("/api/subscribe", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(subscription),
               });
-            });
-        });
-
-        function urlBase64ToUint8Array(base64String) {
-          const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-          const base64 = (base64String + padding)
-            .replace(/-/g, "+")
-            .replace(/_/g, "/");
-          const rawData = window.atob(base64);
-          const outputArray = new Uint8Array(rawData.length);
-          for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i);
+            } catch (error) {
+              console.error("Push subscription failed:", error);
+            }
+          } else {
+            console.log("Notification permission denied or not supported");
+            // You could show a message to the user here
           }
-          return outputArray;
+
+          // Update notification status display
+          updateNotificationStatus(permission);
+        }).catch(function (error) {
+          console.error("Service Worker registration failed:", error);
+          updateNotificationStatus("error");
+        });
+      } else {
+        console.log("Service Worker or Notifications not supported");
+        updateNotificationStatus("unsupported");
+      }
+
+      function updateNotificationStatus(permission) {
+        const statusElement = document.getElementById("notificationStatus");
+        statusElement.classList.remove("hidden");
+
+        if (permission === "granted") {
+          statusElement.innerHTML = `
+            <div class="flex items-center gap-2 text-green-400">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-sm font-medium">Notifications enabled</span>
+            </div>
+          `;
+        } else if (permission === "denied") {
+          statusElement.innerHTML = `
+            <div class="flex items-center gap-2 text-red-400">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-sm font-medium">Notifications blocked</span>
+              <button id="enableNotifications" class="text-xs underline hover:text-red-300">Enable</button>
+            </div>
+          `;
+          document.getElementById("enableNotifications").onclick = async () => {
+            const newPermission = await Notification.requestPermission();
+            updateNotificationStatus(newPermission);
+            if (newPermission === "granted") {
+              location.reload(); // Reload to trigger subscription
+            }
+          };
+        } else if (permission === "default") {
+          statusElement.innerHTML = `
+            <div class="flex items-center gap-2 text-yellow-400">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-sm font-medium">Notifications not requested</span>
+              <button id="requestNotifications" class="text-xs underline hover:text-yellow-300">Enable</button>
+            </div>
+          `;
+          document.getElementById("requestNotifications").onclick = async () => {
+            const newPermission = await Notification.requestPermission();
+            updateNotificationStatus(newPermission);
+            if (newPermission === "granted") {
+              location.reload(); // Reload to trigger subscription
+            }
+          };
+        } else if (permission === "unsupported") {
+          statusElement.innerHTML = `
+            <div class="flex items-center gap-2 text-gray-400">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-sm font-medium">Notifications not supported</span>
+            </div>
+          `;
+        } else {
+          statusElement.innerHTML = `
+            <div class="flex items-center gap-2 text-gray-400">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              <span class="text-sm font-medium">Notification error</span>
+            </div>
+          `;
         }
+      }
+
+      function urlBase64ToUint8Array(base64String) {
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding)
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
       }
 
       // Initialize

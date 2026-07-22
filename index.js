@@ -31,6 +31,27 @@ let channels;
 let subscriptions = []; // In production, store in a DB
 
 const fs = require("fs");
+const DEFAULT_PRIORITY = ["twt", "ytb", "kick"];
+
+const normalizePriority = (priority) => {
+  const allowed = new Set(DEFAULT_PRIORITY);
+  const normalized = [];
+
+  (Array.isArray(priority) ? priority : []).forEach((value) => {
+    const item = String(value).toLowerCase();
+    if (allowed.has(item) && !normalized.includes(item)) {
+      normalized.push(item);
+    }
+  });
+
+  DEFAULT_PRIORITY.forEach((value) => {
+    if (!normalized.includes(value)) {
+      normalized.push(value);
+    }
+  });
+
+  return normalized;
+};
 
 const saveData = () => {
   try {
@@ -277,9 +298,22 @@ app.post("/api/add-channel", (req, res) => {
   channels.push({
     name: channel.toLowerCase(),
     games: [],
+    priority: [...DEFAULT_PRIORITY],
   });
   saveData();
   res.status(200).send("Channel added successfully");
+});
+
+app.post("/api/update-priority-order", (req, res) => {
+  const { channel, priority } = req.body;
+  if (!channel) return res.status(400).send("Missing channel");
+
+  const ch = channels.find((c) => c.name === channel.toLowerCase());
+  if (!ch) return res.status(404).send("Channel not found");
+
+  ch.priority = normalizePriority(priority);
+  saveData();
+  res.sendStatus(200);
 });
 
 app.post("/api/add-game", (req, res) => {
@@ -320,6 +354,16 @@ app.post("/api/add-kick-channel", (req, res) => {
   const ch = channels.find((c) => c.name === twitch.toLowerCase());
   if (!ch) return res.status(404).send("Twitch channel not found");
   ch.kick = kick;
+  saveData();
+  res.sendStatus(200);
+});
+
+app.post("/api/add-youtube-channel", (req, res) => {
+  const { twitch, youtube } = req.body;
+  if (!twitch || !youtube) return res.status(400).send("Missing channel info");
+  const ch = channels.find((c) => c.name === twitch.toLowerCase());
+  if (!ch) return res.status(404).send("Twitch channel not found");
+  ch.youtube = youtube;
   saveData();
   res.sendStatus(200);
 });
