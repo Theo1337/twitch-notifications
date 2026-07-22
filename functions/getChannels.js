@@ -76,6 +76,7 @@ const getChannels = async (el) => {
       type: "offline",
       kick: users.find((u) => u.name === c.login)?.kick,
       youtube: users.find((u) => u.name === c.login)?.youtube,
+      priority: users.find((u) => u.name === c.login)?.priority,
     }));
 
     // Merge and deduplicate, prefer live

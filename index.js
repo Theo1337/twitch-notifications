@@ -207,7 +207,7 @@ app.get("/getFavChannels", async (req, res) => {
     c.kick_live = {};
   });
 
-  res.status(200).send(favChannels);
+  res.status(200).send(favChannels.filter((c) => c.kick_live));
 });
 
 app.get("/getAlternativeStreams", async (req, res) => {

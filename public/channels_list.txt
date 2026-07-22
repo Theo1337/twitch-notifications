@@ -79,8 +79,8 @@
     "kick": "sacy",
     "priority": [
       "kick",
-      "ytb",
-      "twt"
+      "twt",
+      "ytb"
     ]
   },
   {
