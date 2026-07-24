@@ -60,6 +60,7 @@ const getChannels = async (el) => {
           ...channel,
           kick: users.find((u) => u.name === channel.user_login)?.kick,
           youtube: users.find((u) => u.name === channel.user_login)?.youtube,
+          priority: users.find((u) => u.name === channel.user_login)?.priority,
         });
       });
     });
