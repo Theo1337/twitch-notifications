@@ -46,10 +46,9 @@
   {
     "name": "bethuueel",
     "games": [],
-    "youtube": "111",
     "priority": [
-      "ytb",
       "twt",
+      "ytb",
       "kick"
     ]
   },

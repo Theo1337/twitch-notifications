@@ -130,6 +130,7 @@
             autofocus
             autocomplete="off"
             type="text"
+            onKeyDown="if (event.keyCode == 13) document.getElementById('confirmAddChannel').click()"
           />
         </div>
         <div
@@ -173,6 +174,7 @@
             autofocus
             autocomplete="off"
             type="text"
+            onKeyDown="if (event.keyCode == 13) document.getElementById('confirmAddKick').click()"
           />
         </div>
         <div
@@ -216,7 +218,8 @@
             autofocus
             autocomplete="off"
             type="text"
-          />
+            onKeyDown="if (event.keyCode == 13) document.getElementById('confirmAddYoutube').click()"
+          />  
         </div>
         <div
           id="addYoutubeMessage"
@@ -419,11 +422,34 @@
           .getElementById("addKickInput")
           .value.trim();
         const msg = document.getElementById("addKickMessage");
-        if (!kickChannel) {
-          msg.textContent = "Please enter a Kick channel name.";
+        if(kickChannel.length == 0) {
+          const twitchChannel =
+            window.channels?.[selectedTwitchIdx]?.display_name;
+
+          msg.textContent = "Deleting Kick channel...";
           msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+
+          const res = await fetch("/api/remove-kick-channel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ twitch: twitchChannel }),
+          });
+
+          if (res.ok) {
+            msg.textContent = "Kick channel removed!";
+            msg.className =
+              "text-sm mb-4 text-center font-medium text-green-400";
+            setTimeout(() => {
+              document.getElementById("addKickDialog").close();
+              location.reload();
+            }, 800);
+          } else {
+            msg.textContent = "Failed to remove Kick channel.";
+            msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+          }
+
           return;
-        }
+        };
         msg.textContent = "Adding Kick channel...";
         msg.className = "text-sm mb-4 text-center font-medium text-yellow-400";
         try {
@@ -472,7 +498,36 @@
           .getElementById("addYoutubeInput")
           .value.trim();
         const msg = document.getElementById("addYoutubeMessage");
-        if (!youtubeChannel) {
+        
+        if(youtubeChannel.length == 0) {
+          const twitchChannel =
+            window.channels?.[selectedTwitchIdx]?.display_name;
+
+          msg.textContent = "Deleting Youtube channel...";
+          msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+
+          const res = await fetch("/api/remove-youtube-channel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ twitch: twitchChannel }),
+          });
+
+          if (res.ok) {
+            msg.textContent = "Youtube channel removed!";
+            msg.className =
+              "text-sm mb-4 text-center font-medium text-green-400";
+            setTimeout(() => {
+              document.getElementById("addYoutubeDialog").close();
+              location.reload();
+            }, 800);
+          } else {
+            msg.textContent = "Failed to remove Youtube channel.";
+            msg.className = "text-sm mb-4 text-center font-medium text-red-400";
+          }
+
+          return;
+        };
+        if (youtubeChannel.length != 24) {
           msg.textContent = "Please enter a Youtube channel ID.";
           msg.className = "text-sm mb-4 text-center font-medium text-red-400";
           return;
@@ -779,7 +834,7 @@
                             type="button"
                             class="priority-platform-btn flex-1 px-3 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 border transition ${
                               isConfigured
-                                ? `${config.class} text-white ${config.color} hover:${config.color}/80`
+                                ? `${config.class} ${config.color} hover:${config.color}/80`
                                 : `bg-gray-800/70 text-gray-400 ${config.color} hover:${config.color}/50`
                             }"
                             data-idx="${idx}"
@@ -800,7 +855,7 @@
 
                 <div class="py-2">
                     <button
-                      class="border uppercase text-xs border-red-500 bg-red-500 hover:bg-red-500/40 transition w-full text-center gap-4 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-semibold text-white"
+                      class="border uppercase text-xs border-red-500 bg-red-500/40 hover:bg-red-500/80 transition w-full text-center gap-4 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-semibold text-white"
                       data-idx="${idx}"
                       draggable
                     >
@@ -817,7 +872,6 @@
         // Attach event listeners
         attachEventListeners();
       }
-
       function attachEventListeners() {
         document.querySelectorAll(".priority-platform-btn").forEach((btn) => {
           btn.ondragstart = (event) => {

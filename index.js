@@ -358,12 +358,34 @@ app.post("/api/add-kick-channel", (req, res) => {
   res.sendStatus(200);
 });
 
+app.post("/api/remove-kick-channel", (req, res) => {
+  const { twitch } = req.body;
+  if (!twitch) return res.status(400).send("Missing channel info");
+  const ch = channels.find((c) => c.name === twitch.toLowerCase());
+  if (!ch) return res.status(404).send("Twitch channel not found");
+  delete ch.kick;
+
+  saveData();
+  res.sendStatus(200);
+});
+
 app.post("/api/add-youtube-channel", (req, res) => {
   const { twitch, youtube } = req.body;
   if (!twitch || !youtube) return res.status(400).send("Missing channel info");
   const ch = channels.find((c) => c.name === twitch.toLowerCase());
   if (!ch) return res.status(404).send("Twitch channel not found");
   ch.youtube = youtube;
+  saveData();
+  res.sendStatus(200);
+});
+
+app.post("/api/remove-youtube-channel", (req, res) => {
+  const { twitch } = req.body;
+  if (!twitch) return res.status(400).send("Missing channel info");
+  const ch = channels.find((c) => c.name === twitch.toLowerCase());
+  if (!ch) return res.status(404).send("Twitch channel not found");
+  delete ch.youtube;
+
   saveData();
   res.sendStatus(200);
 });

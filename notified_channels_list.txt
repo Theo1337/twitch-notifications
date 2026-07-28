@@ -4,11 +4,19 @@
     "games": []
   },
   {
-    "name": "brawlhalla",
+    "name": "coreano",
     "games": []
   },
   {
-    "name": "coreano",
+    "name": "alanzoka",
+    "games": []
+  },
+  {
+    "name": "omeiaum",
+    "games": []
+  },
+  {
+    "name": "northernlion",
     "games": []
   }
 ]
