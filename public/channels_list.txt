@@ -38,9 +38,9 @@
     "kick": "Felps",
     "youtube": "UCQ93zfIBKjL3QGHGQ084cUA",
     "priority": [
-      "twt",
+      "kick",
       "ytb",
-      "kick"
+      "twt"
     ]
   },
   {
@@ -88,9 +88,9 @@
     "kick": "gaules",
     "youtube": "UC5ZTRH1zclthyc6b_D3m2Pw",
     "priority": [
-      "twt",
+      "kick",
       "ytb",
-      "kick"
+      "twt"
     ]
   },
   {
@@ -127,8 +127,8 @@
     "games": [],
     "priority": [
       "twt",
-      "ytb",
-      "kick"
+      "kick",
+      "ytb"
     ]
   },
   {

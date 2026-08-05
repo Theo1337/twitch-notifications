@@ -2,21 +2,5 @@
   {
     "name": "gaules",
     "games": []
-  },
-  {
-    "name": "coreano",
-    "games": []
-  },
-  {
-    "name": "alanzoka",
-    "games": []
-  },
-  {
-    "name": "omeiaum",
-    "games": []
-  },
-  {
-    "name": "northernlion",
-    "games": []
   }
 ]
