@@ -1,6 +1,22 @@
 [
   {
+    "name": "omeiaum",
+    "games": []
+  },
+  {
+    "name": "yoda",
+    "games": []
+  },
+  {
+    "name": "alanzoka",
+    "games": []
+  },
+  {
     "name": "gaules",
+    "games": []
+  },
+  {
+    "name": "calango",
     "games": []
   }
 ]

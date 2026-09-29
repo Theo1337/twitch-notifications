@@ -21,10 +21,6 @@ app.listen(process.env.PORT || 3002); // Recebe solicitações que o deixa onlin
 var cors = require("cors");
 app.use(cors());
 
-app.get("/serverStatus", (req, res) => {
-  res.sendStatus(200);
-});
-
 let access_token;
 let notifiedChannels;
 let channels;
@@ -115,6 +111,24 @@ function notifyUser(channel) {
   subscriptions.forEach((sub) => {
     webpush.sendNotification(sub, payload).catch(console.error);
   });
+
+  if (channel.user_name.toLowerCase() === "bethuueel") {
+    fetch("http://localhost:6767/live", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: channel.user_name,
+        title: channel.title,
+        thumbnail: channel.thumbnail_url,
+        pfp: channel.profile_image_url,
+        game: channel.game_name,
+        youtube: channel.youtube,
+        url: `https://twitch.tv/${channel.user_login}`,
+      }),
+    });
+  }
 }
 
 const getChannels = async (el) => {
@@ -409,6 +423,10 @@ app.post("/api/subscribe", (req, res) => {
     saveData(); // Save subscriptions to file (or DB in production)
   }
   res.status(201).json({});
+});
+
+app.get("/serverStatus", (req, res) => {
+  res.sendStatus(200);
 });
 
 getData();

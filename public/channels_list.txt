@@ -38,9 +38,9 @@
     "kick": "Felps",
     "youtube": "UCQ93zfIBKjL3QGHGQ084cUA",
     "priority": [
+      "twt",
       "kick",
-      "ytb",
-      "twt"
+      "ytb"
     ]
   },
   {
@@ -50,7 +50,8 @@
       "twt",
       "ytb",
       "kick"
-    ]
+    ],
+    "youtube": "UCB9XyHQmb-AxMyZNNWs5d4w"
   },
   {
     "name": "yoda",
@@ -96,13 +97,13 @@
   {
     "name": "coreano",
     "games": [],
-    "kick": "coreano",
     "youtube": "UCOjtyQOi3MR8XOys0WNfkJg",
     "priority": [
       "kick",
       "ytb",
       "twt"
-    ]
+    ],
+    "kick": "Coreano"
   },
   {
     "name": "brawlhalla",
@@ -143,18 +144,47 @@
   {
     "name": "cellbit",
     "games": [
-      "Welcome to the Game III",
       "The Message From Deep Space"
     ],
     "kick": "Cellbit",
     "priority": [
       "twt",
-      "kick",
-      "ytb"
-    ]
+      "ytb",
+      "kick"
+    ],
+    "youtube": "UC2Dkdvw6-ladrHmWZNx2gRA"
   },
   {
     "name": "volleyball",
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ]
+  },
+  {
+    "name": "luk_xoxo",
+    "games": [],
+    "priority": [
+      "twt",
+      "ytb",
+      "kick"
+    ],
+    "kick": "lukxo"
+  },
+  {
+    "name": "tck10",
+    "games": [],
+    "priority": [
+      "kick",
+      "twt",
+      "ytb"
+    ],
+    "kick": "tck10"
+  },
+  {
+    "name": "aspaszin",
     "games": [],
     "priority": [
       "twt",
