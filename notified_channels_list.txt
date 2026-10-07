@@ -1,22 +1,14 @@
 [
   {
-    "name": "omeiaum",
-    "games": []
-  },
-  {
-    "name": "yoda",
-    "games": []
-  },
-  {
-    "name": "alanzoka",
-    "games": []
-  },
-  {
     "name": "gaules",
     "games": []
   },
   {
-    "name": "calango",
+    "name": "northernlion",
+    "games": []
+  },
+  {
+    "name": "coreano",
     "games": []
   }
 ]

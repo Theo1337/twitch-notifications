@@ -38,9 +38,9 @@
     "kick": "Felps",
     "youtube": "UCQ93zfIBKjL3QGHGQ084cUA",
     "priority": [
+      "ytb",
       "twt",
-      "kick",
-      "ytb"
+      "kick"
     ]
   },
   {

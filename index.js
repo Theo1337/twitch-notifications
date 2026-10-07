@@ -194,6 +194,7 @@ const tokenFunction = async () => {
   if (token) {
     access_token = token;
     getChannels({ token: token });
+    warmAlternativeStreams();
   }
 };
 
@@ -201,21 +202,65 @@ setInterval(() => {
   if (access_token) {
     console.log("Refreshing content!");
     getChannels({ token: access_token });
+    warmAlternativeStreams();
 
     console.clear();
   }
 }, 90000);
 
-app.get("/getFavChannels", async (req, res) => {
+let favChannelsInflight = null;
+
+const fetchFavChannels = () => {
   const getChannels = require("./functions/getChannels");
 
-  const token = access_token;
+  if (!favChannelsInflight) {
+    favChannelsInflight = getChannels({
+      channels: channels,
+      token: access_token,
+      type: "all",
+    }).finally(() => {
+      favChannelsInflight = null;
+    });
+  }
 
-  const favChannels = await getChannels({
-    channels: channels,
-    token: token,
-    type: "all",
-  });
+  return favChannelsInflight;
+};
+
+let warmInflight = false;
+
+const warmAlternativeStreams = async () => {
+  if (warmInflight) return;
+  warmInflight = true;
+
+  try {
+    const getKickChannels = require("./functions/getKickChannels");
+    const getYoutubeLive = require("./functions/getYoutubeLive");
+
+    const kickPromise = getKickChannels({ channels, force: true, ttl: 75000 });
+    const favChannels = await fetchFavChannels();
+
+    if (!Array.isArray(favChannels) || favChannels.length === 0) {
+      await kickPromise.catch(() => {});
+      return;
+    }
+
+    const ids = [
+      ...new Set(favChannels.map((c) => c.youtube).filter(Boolean)),
+    ];
+
+    await Promise.all([
+      kickPromise.catch(() => {}),
+      ...ids.map((id) => getYoutubeLive({ id, force: true, ttl: 75000 })),
+    ]);
+  } catch (err) {
+    console.error("warmAlternativeStreams error:", err.message || err);
+  } finally {
+    warmInflight = false;
+  }
+};
+
+app.get("/getFavChannels", async (req, res) => {
+  const favChannels = await fetchFavChannels();
 
   favChannels.forEach((c) => {
     c.kick_live = {};
@@ -225,22 +270,18 @@ app.get("/getFavChannels", async (req, res) => {
 });
 
 app.get("/getAlternativeStreams", async (req, res) => {
-  const getChannels = require("./functions/getChannels");
   const getKickChannels = require("./functions/getKickChannels");
   const getYoutubeLive = require("./functions/getYoutubeLive");
 
-  const token = access_token;
+  const kickPromise = getKickChannels({ channels: channels });
+  const favChannels = await fetchFavChannels();
 
-  const favChannels = await getChannels({
-    channels: channels,
-    token: token,
-    type: "all",
-  });
+  if (!Array.isArray(favChannels) || favChannels.length === 0) {
+    kickPromise.catch(() => {});
+    return res.status(200).send(favChannels);
+  }
 
-  const kickChannels = await getKickChannels({ channels: channels });
-
-  if (!Array.isArray(favChannels) || favChannels.length === 0)
-    return favChannels;
+  const kickChannels = (await kickPromise.catch(() => [])) || [];
 
   await Promise.all(
     favChannels.map(async (c) => {
