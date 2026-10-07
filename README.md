@@ -1,4 +1,4 @@
-A Twitch app to send notifications in a Discord server
+A Twitch app to send notifications via a service worker.
 
 ## Features
 
